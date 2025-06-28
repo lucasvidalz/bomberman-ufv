@@ -14,6 +14,21 @@ class BomberMan:
         self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("BomberMan")
         
+        # Centralizar a janela na tela
+        try:
+            import ctypes
+            hwnd = pygame.display.get_wm_info()["window"]
+            # Obter dimensões da tela
+            screen_width = ctypes.windll.user32.GetSystemMetrics(0)
+            screen_height = ctypes.windll.user32.GetSystemMetrics(1)
+            # Calcular posição central
+            x = (screen_width - gs.SCREENWIDTH) // 2
+            y = (screen_height - gs.SCREENHEIGHT) // 2
+            # Posicionar a janela
+            ctypes.windll.user32.SetWindowPos(hwnd, 0, x, y, 0, 0, 0x0001)
+        except Exception as e:
+            print(f"Não foi possível centralizar a janela: {e}")
+        
         # Garantir que a janela tenha o ícone X e comportamento padrão
         try:
             import ctypes

@@ -32,7 +32,10 @@ class Game:
 
         #  Configurações do jogo
         self.game_on = False
-        self.point_position = [(480, 616), (480, 674)]
+        # Ajustar coordenadas do ponteiro para o novo tamanho da janela (1024x768)
+        # Original: 1280x892, Novo: 1024x768
+        # Proporção X: 1024/1280 = 0.8, Proporção Y: 768/892 = 0.86
+        self.point_position = [(384, 530), (384, 580)]  # Ajustado proporcionalmente
         self.point_pos = 0
         self.pointer_pos = self.point_position[self.point_pos]
 
@@ -126,9 +129,9 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     mouse_x, mouse_y = event.pos
                     print(f"Clique do mouse em: x={mouse_x}, y={mouse_y}")
-                    # Coordenadas dos botões (ajuste conforme necessário)
-                    start_rect = pygame.Rect(480, 616, 320, 48)  # x, y, largura, altura
-                    continue_rect = pygame.Rect(480, 674, 320, 48)
+                    # Coordenadas dos botões ajustadas para o novo tamanho da janela
+                    start_rect = pygame.Rect(384, 530, 256, 40)  # x, y, largura, altura
+                    continue_rect = pygame.Rect(384, 580, 256, 40)
                     if start_rect.collidepoint(mouse_x, mouse_y):
                         print("Clique detectado em START!")
                         self.point_pos = 0
@@ -200,7 +203,7 @@ class Game:
             window.blit(self.ASSETS.start_screen_pointer, (self.pointer_pos))
             if self.top_score_img:
                 for i, img in enumerate(self.top_score_img):
-                    window.blit(img, (798 + ((i - len(self.top_score_img)) * 32), 762))
+                    window.blit(img, (638 + ((i - len(self.top_score_img)) * 32), 655))  # Ajustado para 1024x768
             return
 
         if self.transition:

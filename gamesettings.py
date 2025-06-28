@@ -1,6 +1,6 @@
 #  Configurações da janela do jogo
-SCREENWIDTH = 1280
-SCREENHEIGHT = 892
+SCREENWIDTH = 1024
+SCREENHEIGHT = 768
 
 #  Quadros de jogo por segundo
 FPS = 60
