@@ -142,6 +142,11 @@ class Game:
             return
 
         if hasattr(self, 'player'):
+            # Verificar eventos QUIT mesmo durante o jogo
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.MAIN.run = False
+                    return
             self.player.input()
 
 
@@ -193,11 +198,6 @@ class Game:
         if not self.game_on:
             window.blit(self.ASSETS.start_screen, (0, 0))
             window.blit(self.ASSETS.start_screen_pointer, (self.pointer_pos))
-            # Desenhar retângulos de depuração sobre os botões
-            start_rect = pygame.Rect(480, 616, 320, 48)
-            continue_rect = pygame.Rect(480, 674, 320, 48)
-            pygame.draw.rect(window, (255,0,0), start_rect, 2)  # vermelho
-            pygame.draw.rect(window, (0,255,0), continue_rect, 2)  # verde
             if self.top_score_img:
                 for i, img in enumerate(self.top_score_img):
                     window.blit(img, (798 + ((i - len(self.top_score_img)) * 32), 762))

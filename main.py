@@ -9,8 +9,25 @@ class BomberMan:
         pygame.init()
         pygame.mixer.init()
 
-        self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT))
+        # Configurar a janela com comportamento padrão do Windows
+        # Usar RESIZABLE para garantir que a janela tenha as bordas padrão
+        self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("BomberMan")
+        
+        # Garantir que a janela tenha o ícone X e comportamento padrão
+        try:
+            import ctypes
+            hwnd = pygame.display.get_wm_info()["window"]
+            # Definir estilo da janela para ter bordas padrão
+            style = ctypes.windll.user32.GetWindowLongW(hwnd, -16)  # GWL_STYLE
+            style |= 0x00C00000  # WS_CAPTION | WS_SYSMENU
+            style |= 0x00080000  # WS_BORDER
+            style |= 0x00040000  # WS_THICKFRAME
+            ctypes.windll.user32.SetWindowLongW(hwnd, -16, style)
+            # Forçar redesenho da janela
+            ctypes.windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0004)
+        except Exception as e:
+            print(f"Não foi possível configurar as bordas da janela: {e}")
 
         self.ASSETS = Assets()
         self.GAME = Game(self, self.ASSETS)
@@ -24,6 +41,9 @@ class BomberMan:
         for event in events:
             if event.type == pygame.QUIT:
                 self.run = False
+            elif event.type == pygame.VIDEORESIZE:
+                # Manter o tamanho original se a janela for redimensionada
+                self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
         self.GAME.input(events)
 
 
