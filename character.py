@@ -27,8 +27,11 @@ class Character(pygame.sprite.Sprite):
         self.lives = 1
 
 
-    def input(self):
-        for event in pygame.event.get():
+    def input(self, events=None):
+        if events is None:
+            events = pygame.event.get()
+            
+        for event in events:
             #  Verifique se a cruz vermelha foi clicada
             if event.type == pygame.QUIT:
                 self.GAME.MAIN.run = False
@@ -36,10 +39,16 @@ class Character(pygame.sprite.Sprite):
                 if event.key == pygame.K_ESCAPE:
                     self.GAME.MAIN.run = False
                 elif event.key == pygame.K_SPACE:
+                    print(f"ESPAÇO pressionado! Bombs planted: {self.bombs_planted}, Bomb limit: {self.bomb_limit}")
                     row, col = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // self.size)
+                    print(f"Posição calculada: row={row}, col={col}")
+                    print(f"Conteúdo da matriz nessa posição: {self.GAME.level_matrix[row][col]}")
                     if self.GAME.level_matrix[row][col] == "_" and self.bombs_planted < self.bomb_limit:
+                        print("Plantando bomba!")
                         Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"],
                              self.GAME.groups["bomb"], self.power, row, col, gs.SIZE, self.remote)
+                    else:
+                        print(f"Não pode plantar bomba. Matriz: {self.GAME.level_matrix[row][col]}, Bombs: {self.bombs_planted}/{self.bomb_limit}")
                 elif event.key == pygame.K_LCTRL and self.remote and self.GAME.groups["bomb"]:
                     bomb_list = self.GAME.groups["bomb"].sprites()
                     bomb_list[-1].explode()

@@ -150,7 +150,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.MAIN.run = False
                     return
-            self.player.input()
+            self.player.input(events)
 
 
     def update(self):
