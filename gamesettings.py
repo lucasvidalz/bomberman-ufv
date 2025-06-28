@@ -11,6 +11,9 @@ Y_OFFSET = 92
 #  Tempo de nível
 STAGE_TIME = 200
 
+#  Tempo de explosão das bombas (em milissegundos)
+BOMB_EXPLOSION_TIME = 1500  # 1 segundo
+
 #  Atributos do inimigo
 ENEMIES = {"ballom": {"speed": 1, "wall_hack": False, "chase_player": False, "LoS": 0, "see_player_hack": False},
            "onil": {"speed": 2, "wall_hack": False, "chase_player": True, "LoS": 4, "see_player_hack": False},

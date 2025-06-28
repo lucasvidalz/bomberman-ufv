@@ -39,16 +39,10 @@ class Character(pygame.sprite.Sprite):
                 if event.key == pygame.K_ESCAPE:
                     self.GAME.MAIN.run = False
                 elif event.key == pygame.K_SPACE:
-                    print(f"ESPAÇO pressionado! Bombs planted: {self.bombs_planted}, Bomb limit: {self.bomb_limit}")
                     row, col = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // self.size)
-                    print(f"Posição calculada: row={row}, col={col}")
-                    print(f"Conteúdo da matriz nessa posição: {self.GAME.level_matrix[row][col]}")
                     if self.GAME.level_matrix[row][col] == "_" and self.bombs_planted < self.bomb_limit:
-                        print("Plantando bomba!")
                         Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"],
                              self.GAME.groups["bomb"], self.power, row, col, gs.SIZE, self.remote)
-                    else:
-                        print(f"Não pode plantar bomba. Matriz: {self.GAME.level_matrix[row][col]}, Bombs: {self.bombs_planted}/{self.bomb_limit}")
                 elif event.key == pygame.K_LCTRL and self.remote and self.GAME.groups["bomb"]:
                     bomb_list = self.GAME.groups["bomb"].sprites()
                     bomb_list[-1].explode()
@@ -249,7 +243,7 @@ class Character(pygame.sprite.Sprite):
         self.alive = True
         self.speed = 3
         self.bomb_limit = 2
-        self.remote = True
+        self.remote = False
         self.power = 1
         self.wall_hack = False
         self.bomb_hack = True
@@ -326,8 +320,8 @@ class Bomb(pygame.sprite.Sprite):
         self.y = (self.row * self.size) + gs.Y_OFFSET
 
         #  Atributos da bomba
-        self.bomb_counter = 1
-        self.bomb_timer = 12
+        self.bomb_timer = gs.BOMB_EXPLOSION_TIME  # Usa a configuração do gamesettings
+        self.bomb_start_time = pygame.time.get_ticks()
         self.passable = True
         self.remote = remote
         self.power = power
@@ -353,7 +347,10 @@ class Bomb(pygame.sprite.Sprite):
     def update(self):
         self.animation()
         self.planted_bomb_player_collision()
-        if self.bomb_counter == self.bomb_timer and not self.remote:
+        current_time = pygame.time.get_ticks()
+        time_elapsed = current_time - self.bomb_start_time
+        
+        if time_elapsed >= self.bomb_timer and not self.remote:
             self.explode()
 
 
@@ -373,7 +370,6 @@ class Bomb(pygame.sprite.Sprite):
             self.index = self.index % self.anim_length
             self.image = self.image_list[self.index]
             self.anim_timer = pygame.time.get_ticks()
-            self.bomb_counter += 1
 
 
     def remove_bomb_from_grid(self):
