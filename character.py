@@ -41,7 +41,7 @@ class Character(pygame.sprite.Sprite):
                 elif event.key == pygame.K_SPACE:
                     row, col = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // self.size)
                     if self.GAME.level_matrix[row][col] == "_" and self.bombs_planted < self.bomb_limit:
-                        Bomb(self.GAME, self.GAME.ASSETS.bomb["bomb"],
+                        Bomb(self.GAME, self.GAME.assets.bomb["bomb"],
                              self.GAME.groups["bomb"], self.power, row, col, gs.SIZE, self.remote)
                 elif event.key == pygame.K_LCTRL and self.remote and self.GAME.groups["bomb"]:
                     bomb_list = self.GAME.groups["bomb"].sprites()
@@ -75,7 +75,7 @@ class Character(pygame.sprite.Sprite):
         if not self.invincibility:
             return
 
-        if pygame.time.get_ticks() - self.invincibility_timer >= 20000:
+        if self.invincibility_timer is not None and pygame.time.get_ticks() - self.invincibility_timer >= 20000:
             self.invincibility = False
             self.invincibility_timer = None
 
@@ -93,7 +93,7 @@ class Character(pygame.sprite.Sprite):
                 self.death_sound_play == False:
                 self.death_sound_play = True
                 self.death_sound_timer = pygame.time.get_ticks()
-                self.GAME.ASSETS.sounds["BM - 09 Miss.mp3"].play()
+                self.GAME.assets.sounds["BM - 09 Miss.mp3"].play()
                 self.index = len(self.image_dict[action]) - 1
                 self.delay = False
                 return
@@ -122,7 +122,7 @@ class Character(pygame.sprite.Sprite):
     def move(self, action):
         """Lida com o movimento e as animações do personagem"""
         #  se o jogador não estiver vivo, não se mova
-        if not self.alive:
+        if not self._alive:
             return
 
         #  Verifica se a ação é diferente da self.action atual, redefina o número do índice para 0
@@ -141,9 +141,9 @@ class Character(pygame.sprite.Sprite):
         #  Reproduz o som do personagem ao se mover
         if pygame.time.get_ticks() - self.walk_sound_timer >= 200:
             if self.action in ["walk_left", "walk_right"]:
-                self.GAME.ASSETS.sounds["Bomberman SFX (1).wav"].play()
+                self.GAME.assets.sounds["Bomberman SFX (1).wav"].play()
             elif self.action in ["walk_up", "walk_down"]:
-                self.GAME.ASSETS.sounds["Bomberman SFX (2).wav"].play()
+                self.GAME.assets.sounds["Bomberman SFX (2).wav"].play()
             self.walk_sound_timer = pygame.time.get_ticks()
 
         #  Chama o método de animação
@@ -240,7 +240,7 @@ class Character(pygame.sprite.Sprite):
         self.set_player_position()
 
         #  Atributos de personagem
-        self.alive = True
+        self._alive = True
         self.speed = 3
         self.bomb_limit = 2
         self.remote = False
@@ -282,7 +282,7 @@ class Character(pygame.sprite.Sprite):
 
 
     def deadly_collisions(self, group):
-        if not self.alive:
+        if not self._alive:
             return
 
         for item in group:
@@ -290,10 +290,10 @@ class Character(pygame.sprite.Sprite):
                 continue
             if pygame.sprite.collide_mask(self, item):
                 self.action = "dead_anim"
-                self.alive = False
+                self._alive = False
                 self.GAME.bg_music.stop()
                 self.GAME.bg_music_special.stop()
-                self.GAME.ASSETS.sounds["Bomberman SFX (5).wav"].play()
+                self.GAME.assets.sounds["Bomberman SFX (5).wav"].play()
                 return
 
 
@@ -341,7 +341,7 @@ class Bomb(pygame.sprite.Sprite):
         self.insert_bomb_into_grid()
 
         #  Reproduzir som quando a bomba for colocada
-        self.GAME.ASSETS.sounds["Bomberman SFX (3).wav"].play()
+        self.GAME.assets.sounds["Bomberman SFX (3).wav"].play()
 
 
     def update(self):
@@ -381,8 +381,8 @@ class Bomb(pygame.sprite.Sprite):
     def explode(self):
         """Destroi a bomba e remove da matriz de nível"""
         self.kill()
-        Explosion(self.GAME, self.GAME.ASSETS.explosions, "centre", self.power,
-                  self.GAME.groups["explosions"], self.row, self.col, self.size)
+        Explosion(self.GAME, self.GAME.assets.explosions, "centre", self.power,
+                  self.GAME.groups["explosions"], self.row, self.col, gs.SIZE)
         self.remove_bomb_from_grid()
 
 
@@ -428,7 +428,7 @@ class Explosion(pygame.sprite.Sprite):
         self.calculate_explosive_path()
 
         #  Reproduz som de explosão
-        self.GAME.ASSETS.sounds["Bomberman SFX (7).wav"].play()
+        self.GAME.assets.sounds["Bomberman SFX (7).wav"].play()
 
 
     def update(self):

@@ -3,84 +3,85 @@ from assets import Assets
 from game import Game
 import gamesettings as gs
 
-
 class BomberMan:
+    """Classe principal que inicia e executa o jogo"""
     def __init__(self):
         pygame.init()
         pygame.mixer.init()
+        self._initialize_window()
+        self._assets = Assets()
+        self._game = Game(self, self._assets)
+        self._FPS = pygame.time.Clock()
+        self._run = True
 
-        # Configurar a janela com comportamento padrão do Windows
-        # Usar RESIZABLE para garantir que a janela tenha as bordas padrão
-        self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
+    def _initialize_window(self):
+        """Configura a janela do jogo"""
+        self._screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("BomberMan")
-        
-        # Centralizar a janela na tela
+        self._center_window()
+        self._set_window_style()
+
+    def _center_window(self):
+        """Centraliza a janela na tela"""
         try:
             import ctypes
             hwnd = pygame.display.get_wm_info()["window"]
-            # Obter dimensões da tela
             screen_width = ctypes.windll.user32.GetSystemMetrics(0)
             screen_height = ctypes.windll.user32.GetSystemMetrics(1)
-            # Calcular posição central
             x = (screen_width - gs.SCREENWIDTH) // 2
             y = (screen_height - gs.SCREENHEIGHT) // 2
-            # Posicionar a janela
             ctypes.windll.user32.SetWindowPos(hwnd, 0, x, y, 0, 0, 0x0001)
         except Exception as e:
             print(f"Não foi possível centralizar a janela: {e}")
-        
-        # Garantir que a janela tenha o ícone X e comportamento padrão
+
+    def _set_window_style(self):
+        """Configura o estilo da janela"""
         try:
             import ctypes
             hwnd = pygame.display.get_wm_info()["window"]
-            # Definir estilo da janela para ter bordas padrão
             style = ctypes.windll.user32.GetWindowLongW(hwnd, -16)  # GWL_STYLE
             style |= 0x00C00000  # WS_CAPTION | WS_SYSMENU
             style |= 0x00080000  # WS_BORDER
             style |= 0x00040000  # WS_THICKFRAME
             ctypes.windll.user32.SetWindowLongW(hwnd, -16, style)
-            # Forçar redesenho da janela
             ctypes.windll.user32.SetWindowPos(hwnd, 0, 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0004)
         except Exception as e:
             print(f"Não foi possível configurar as bordas da janela: {e}")
 
-        self.ASSETS = Assets()
-        self.GAME = Game(self, self.ASSETS)
-        self.FPS = pygame.time.Clock()
+    @property
+    def run(self):
+        return self._run
 
-        self.run = True
-
+    @run.setter
+    def run(self, value):
+        self._run = value
 
     def input(self):
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
-                self.run = False
+                self._run = False
             elif event.type == pygame.VIDEORESIZE:
-                # Manter o tamanho original se a janela for redimensionada
-                self.screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
-        self.GAME.input(events)
-
+                self._screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
+        self._game.input(events)
 
     def update(self):
-        self.FPS.tick(gs.FPS)
-        self.GAME.update()
+        self._FPS.tick(gs.FPS)
+        self._game.update()
 
-
-    def draw(self, window):
-        window.fill(gs.BLACK)
-        self.GAME.draw(window)
+    def draw(self):
+        self._screen.fill(gs.BLACK)
+        self._game.draw(self._screen)
         pygame.display.update()
 
-
-    def rungame(self):
-        while self.run == True:
+    def run_game(self):
+        """Loop principal do jogo"""
+        while self._run:
             self.input()
             self.update()
-            self.draw(self.screen)
+            self.draw()
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     game = BomberMan()
-    game.rungame()
+    game.run_game()
     pygame.quit()

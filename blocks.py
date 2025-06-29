@@ -1,112 +1,133 @@
 import pygame
 from specials import Special
 import gamesettings as gs
+from abc import ABC, abstractmethod
 
-
-class Blocks(pygame.sprite.Sprite):
+class Block(pygame.sprite.Sprite, ABC):
+    """Classe abstrata base para todos os tipos de blocos"""
     def __init__(self, game, images, group, row_num, col_num, size):
         super().__init__(group)
-        self.GAME = game
-        self.y_offset = gs.Y_OFFSET
+        self._game = game
+        self._y_offset = gs.Y_OFFSET
+        self._row = row_num
+        self._col = col_num
+        self._size = size
+        self._x = self._col * self._size
+        self._y = (self._row * self._size) + self._y_offset
+        self._passable = True
+        self._image_list = images
+        self._image_index = 0
+        self._image = self._image_list[self._image_index]
+        self._rect = self._image.get_rect(topleft=(self._x, self._y))
+        
+        # Atributos diretos para compatibilidade com pygame
+        self.image = self._image
+        self.rect = self._rect
 
-        #  Posição na matriz de nivel
-        self.row = row_num
-        self.col = col_num
+    @property
+    def passable(self):
+        return self._passable
 
-        #  Tamanho da celula
-        self.size = size
+    @passable.setter
+    def passable(self, value):
+        self._passable = value
 
-        #  Coordenadas do bloco
-        self.x = self.col * self.size
-        self.y = (self.row * self.size) + self.y_offset
+    @property
+    def row(self):
+        return self._row
 
-        #  Attributos
-        self.passable = True
+    @property
+    def col(self):
+        return self._col
 
-        #  Bloquear imagem
-        self.image_list = images
-        self.image_index = 0
-        self.image = self.image_list[self.image_index]
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
-
-
+    @abstractmethod
     def update(self):
         pass
 
-
     def draw(self, window, offset):
-        window.blit(self.image, (self.rect.x - offset, self.rect.y))
-
+        window.blit(self._image, (self._rect.x - offset, self._rect.y))
 
     def __repr__(self):
         return "'#'"
 
-
-class Hard_Block(Blocks):
+class HardBlock(Block):
+    """Blocos indestrutíveis"""
     def __init__(self, game, images, group, row_num, col_num, size):
         super().__init__(game, images, group, row_num, col_num, size)
-        self.passable = False
-
-class Soft_Block(Blocks):
-    def __init__(self, game, images, group, row_num, col_num, size):
-        super().__init__(game, images, group, row_num, col_num, size)
-        self.passable = False
-        self.anim_timer = pygame.time.get_ticks()
-        self.anim_frame_time = 50
-
-        self.destroyed = False
-
+        self._passable = False
 
     def update(self):
-        if self.destroyed:
-            if pygame.time.get_ticks() - self.anim_timer >= self.anim_frame_time:
-                self.image_index += 1
-                if self.image_index >= len(self.image_list) - 1:
-                    self.kill()
-                self.image = self.image_list[self.image_index]
-                self.anim_timer = pygame.time.get_ticks()
-            for enemy in self.GAME.groups["enemies"]:
-                if enemy.destroyed:
-                    continue
-                if not self.rect.colliderect(enemy):
-                    continue
-                if pygame.sprite.collide_mask(self, enemy):
-                    enemy.destroy()
-            if self.rect.colliderect(self.GAME.player):
-                if pygame.sprite.collide_mask(self, self.GAME.player):
-                    self.GAME.player.alive = False
-                    self.GAME.player.action = "dead_anim"
+        pass
 
+    def __repr__(self):
+        return "'#'"
+
+class SoftBlock(Block):
+    """Blocos destrutíveis"""
+    def __init__(self, game, images, group, row_num, col_num, size):
+        super().__init__(game, images, group, row_num, col_num, size)
+        self._passable = False
+        self._anim_timer = pygame.time.get_ticks()
+        self._anim_frame_time = 50
+        self._destroyed = False
+
+    def update(self):
+        if self._destroyed:
+            self._handle_destruction()
+            self._check_collisions()
+
+    def _handle_destruction(self):
+        if pygame.time.get_ticks() - self._anim_timer >= self._anim_frame_time:
+            self._image_index += 1
+            if self._image_index >= len(self._image_list):
+                self.kill()
+            else:
+                self._image = self._image_list[self._image_index]
+                # Atualizar o atributo direto para compatibilidade com pygame
+                self.image = self._image
+            self._anim_timer = pygame.time.get_ticks()
+
+    def _check_collisions(self):
+        for enemy in self._game.groups["enemies"]:
+            if enemy.destroyed:
+                continue
+            if not self._rect.colliderect(enemy.rect):
+                continue
+            if pygame.sprite.collide_mask(self, enemy):
+                enemy.destroy()
+                
+        if self._rect.colliderect(self._game.player.rect):
+            if pygame.sprite.collide_mask(self, self._game.player):
+                self._game.player.alive = False
+                self._game.player.action = "dead_anim"
 
     def destroy_soft_block(self):
-        """Se o soft block foi destruído, altere o booleano destruído para True e defina o temporizador"""
-        if not self.destroyed:
-            self.anim_timer = pygame.time.get_ticks()
-            self.destroyed = True
-            self.GAME.level_matrix[self.row][self.col] = "_"
-
+        """Destrói o bloco macio"""
+        if not self._destroyed:
+            self._anim_timer = pygame.time.get_ticks()
+            self._destroyed = True
+            self._game.level_matrix[self._row][self._col] = "_"
 
     def __repr__(self):
         return "'@'"
 
-
-class Special_Soft_Block(Soft_Block):
+class SpecialSoftBlock(SoftBlock):
+    """Blocos macios que contêm power-ups especiais"""
     def __init__(self, game, images, group, row_num, col_num, size, special_type):
         super().__init__(game, images, group, row_num, col_num, size)
-
-        self.special_type = special_type
-        print((self.row, self.col))
-
+        self._special_type = special_type
 
     def kill(self):
         super().kill()
-        self.place_special_block()
+        self._place_special_block()
 
+    def _place_special_block(self):
+        special_cell = Special(self._game,
+                             self._game.assets.specials[self._special_type][0],
+                             self._special_type,
+                             self._game.groups["specials"],
+                             self._row, self._col, self._size)
+        self._game.level_matrix[self._row][self._col] = special_cell
 
-    def place_special_block(self):
-        special_cell = Special(self.GAME,
-                               self.GAME.ASSETS.specials[self.special_type][0],
-                               self.special_type,
-                               self.GAME.groups["specials"],
-                               self.row, self.col, self.size)
-        self.GAME.level_matrix[self.row][self.col] = special_cell
+    def __repr__(self):
+        return "'@'"

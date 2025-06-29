@@ -2,107 +2,88 @@ import pygame
 import gamesettings as gs
 from info_panel import Scoring
 
-
 class Special(pygame.sprite.Sprite):
+    """Classe base para os power-ups especiais"""
     def __init__(self, game, image, name, group, row_num, col_num, size):
         super().__init__(group)
-        self.GAME = game
-
-        self.name = name
-
-        #  Posição da Matriz de Nível
-        self.row = row_num
-        self.col = col_num
-
-        #  coordenadas x, y
-        self.size = size
-        self.x = self.col * self.size
-        self.y = (self.row * self.size) + gs.Y_OFFSET
-
-        #  Imagem
-        self.image = image
-        self.rect = self.image.get_rect(topleft=(self.x, self.y))
-
-        #  Habilidades de fortalecimento
-        self.power_up_activate = {"bomb_up": self.bomb_up_special,
-                                  "fire_up": self.fire_up_special,
-                                  "speed_up": self.speed_up_special,
-                                  "wall_hack": self.wall_hack_special,
-                                  "remote": self.remote_special,
-                                  "bomb_pass": self.bomb_hack_special,
-                                  "flame_pass": self.flame_pass_special,
-                                  "invincible": self.invincible_special,
-                                  "exit": self.end_stage}
-
-        self.score = 1000 if self.name == "exit" else 500
-
+        self._game = game
+        self._name = name
+        self._row = row_num
+        self._col = col_num
+        self._size = size
+        self._x = self._col * self._size
+        self._y = (self._row * self._size) + gs.Y_OFFSET
+        self._image = image
+        self._rect = self._image.get_rect(topleft=(self._x, self._y))
+        self._power_up_activate = {
+            "bomb_up": self._bomb_up_special,
+            "fire_up": self._fire_up_special,
+            "speed_up": self._speed_up_special,
+            "wall_hack": self._wall_hack_special,
+            "remote": self._remote_special,
+            "bomb_pass": self._bomb_hack_special,
+            "flame_pass": self._flame_pass_special,
+            "invincible": self._invincible_special,
+            "exit": self._end_stage
+        }
+        self._score = 1000 if self._name == "exit" else 500
 
     def update(self):
-        if self.GAME.player.rect.collidepoint(self.rect.center):
-            #  Ative a inicialização
-            self.power_up_activate[self.name](self.GAME.player)
-            if self.name == "exit":
-                self.GAME.bg_music.stop()
-                self.GAME.bg_music_special.stop()
-                self.GAME.player.update_score(self.score)
-                return
-            self.GAME.level_matrix[self.row][self.col] = "_"
-            self.GAME.ASSETS.sounds["Bomberman SFX (4).wav"].play()
-            self.GAME.bg_music.stop()
-            self.GAME.bg_music_special.play(loops=-1)
-            self.kill()
-            self.GAME.player.update_score(self.score)
+        if not self._game.player.rect.collidepoint(self._rect.center):
             return
+            
+        self._power_up_activate[self._name](self._game.player)
+        
+        if self._name == "exit":
+            self._game.bg_music.stop()
+            self._game.bg_music_special.stop()
+            self._game.player.update_score(self._score)
+            return
+            
+        self._game.level_matrix[self._row][self._col] = "_"
+        self._game.assets.sounds["Bomberman SFX (4).wav"].play()
+        self._game.bg_music.stop()
+        self._game.bg_music_special.play(loops=-1)
+        self.kill()
+        self._game.player.update_score(self._score)
 
+    def draw(self, window, x_offset):
+        window.blit(self._image, (self._rect.x - x_offset, self._rect.y))
 
-    def draw(self,window, x_offset):
-        window.blit(self.image, (self.rect.x - x_offset, self.rect.y))
-
-
-    def bomb_up_special(self, player):
-        """Aumenta o limite de bombas do jogador"""
+    def _bomb_up_special(self, player):
         player.bomb_limit += 1
 
-    def fire_up_special(self, player):
-        """Aumenta o poder das bombas"""
+    def _fire_up_special(self, player):
         player.power += 1
 
-    def speed_up_special(self, player):
-        """Aumenta a velocidade do jogador"""
+    def _speed_up_special(self, player):
         player.speed += 1
 
-    def wall_hack_special(self, player):
-        """Ativa o hack da parede do jogador"""
+    def _wall_hack_special(self, player):
         player.wall_hack = True
 
-    def remote_special(self, player):
-        """Ativa a capacidade de detonação remota"""
+    def _remote_special(self, player):
         player.remote = True
 
-    def bomb_hack_special(self, player):
-        """Ligua a bomba Hack"""
+    def _bomb_hack_special(self, player):
         player.bomb_hack = True
 
-    def flame_pass_special(self, player):
-        """Ativa a capacidade de ignorar explosões de bombas"""
+    def _flame_pass_special(self, player):
         player.flame_pass = True
 
-    def invincible_special(self, player):
-        """Ativa a invencibilidade dos jogadores"""
+    def _invincible_special(self, player):
         player.invincibility = True
         player.invincibility_timer = pygame.time.get_ticks()
 
-    def end_stage(self, player):
-        """Termina o nível e gere um novo nível"""
-        if len(self.GAME.groups["enemies"].sprites()) > 0:
+    def _end_stage(self, player):
+        if len(self._game.groups["enemies"].sprites()) > 0:
             return
 
-        self.GAME.new_stage()
+        self._game.new_stage()
 
     def hit_by_explosion(self):
-        """A ação a ser tomada é que o item especial é atingido por uma explosão"""
         enemies = []
         for _ in range(10):
-            enemies.append(gs.SPECIAL_CONNECTIONS[self.name])
+            enemies.append(gs.SPECIAL_CONNECTIONS[self._name])
 
-        self.GAME.insert_enemies_into_level(self.GAME.level_matrix, enemies)
+        self._game.insert_enemies_into_level(self._game.level_matrix, enemies)
