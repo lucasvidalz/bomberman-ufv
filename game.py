@@ -279,7 +279,8 @@ class Game:
             return
 
         if self.transition and self._level_transition is not None:
-            self._level_transition.update()
+            if self._level_transition.update():  # Se a transição terminou
+                self._level_transition = None
             return
 
         self._handle_music_transitions()
@@ -343,10 +344,11 @@ class Game:
         if self._level_matrix is not None:
             for row_num, row in enumerate(self._level_matrix):
                 for col_num, col in enumerate(row):
-                    window.blit(
-                        self._assets.background["background"][0],
-                        ((col_num * gs.SIZE) - self._camera_x_offset, 
-                         (row_num * gs.SIZE) + gs.Y_OFFSET))
+                    if col != "_":
+                        window.blit(
+                            self._assets.background["background"][0],
+                            ((col_num * gs.SIZE) - self._camera_x_offset, 
+                             (row_num * gs.SIZE) + gs.Y_OFFSET))
         else:
             window.fill(gs.BLACK)
 
@@ -577,9 +579,9 @@ class Game:
 
     def _top_score_image(self):
         score = [item for item in str(self._state.top_score)]
-        score_image = [self._assets.numbers_white[int(image)][0] for image in score]
+        score_image = [self._assets.numbers_white[int(image)] for image in score]
         if self._state.top_score == 0:
-            score_image.append(self._assets.numbers_white[0][0])
+            score_image.append(self._assets.numbers_white[0])
         return score_image
     
     def save_game(self):
@@ -645,10 +647,9 @@ class Game:
         except Exception as e:
             print(f"Erro ao carregar o jogo: {e}")
 
-class LevelTransition(pygame.sprite.Sprite):
+class LevelTransition:
     """Classe para a transição entre níveis"""
     def __init__(self, game, assets, stage_num):
-        super().__init__()
         self._game = game
         self._game.transition = True
         self._assets = assets
@@ -666,13 +667,14 @@ class LevelTransition(pygame.sprite.Sprite):
         """Gera a imagem do número do estágio"""
         num_imgs = []
         for num in str(self._stage_num):
-            num_imgs.append(self._assets.numbers_white[int(num)][0])
+            num_imgs.append(self._assets.numbers_white[int(num)])
         return num_imgs
 
     def update(self):
         if pygame.time.get_ticks() - self._timer >= self._time:
             self._game.transition = False
-            self.kill()
+            return True  # Indica que a transição terminou
+        return False
 
     def draw(self, window):
         window.fill((0, 0, 0))

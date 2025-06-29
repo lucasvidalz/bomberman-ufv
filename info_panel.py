@@ -23,7 +23,7 @@ class InfoPanel:
     def _update_time_image(self):
         """Atualiza a imagem do temporizador"""
         num_string_list = [item for item in str(self._time)]
-        images = [self._black_nums[int(image)][0] for image in num_string_list]
+        images = [self._black_nums[int(image)] for image in num_string_list]
         return images
 
     def update(self):
@@ -56,14 +56,14 @@ class InfoPanel:
 
         # Vidas
         window.blit(self._player_lives_left_word, (1032, 32))
-        window.blit(self._black_nums[self._game.player.lives][0], (1184, 32))
+        window.blit(self._black_nums[self._game.player.lives], (1184, 32))
 
     def _update_score_image(self, score):
         """Atualiza a imagem da pontuação"""
         if score == 0:
-            score_images = [self._black_nums[0][0], self._black_nums[0][0]]
+            score_images = [self._black_nums[0], self._black_nums[0]]
         else:
-            score_images = [self._black_nums[int(digit)][0] for digit in str(score)]
+            score_images = [self._black_nums[int(digit)] for digit in str(score)]
         return score_images
 
 class Scoring(pygame.sprite.Sprite):
