@@ -3,7 +3,10 @@ import core.gamesettings as gs
 
 
 class Character(pygame.sprite.Sprite):
+    # HERANÇA: Character herda de pygame.sprite.Sprite, obtendo funcionalidades 
+    # básicas de sprite como grupos, colisões, etc.
     def __init__(self, game, image_dict, group, row_num, col_num, size):
+        # HERANÇA: Chama o construtor da classe pai (pygame.sprite.Sprite)
         super().__init__(group)
         self.GAME = game
 
@@ -28,6 +31,8 @@ class Character(pygame.sprite.Sprite):
 
 
     def input(self, events=None):
+        # POLIMORFISMO: Método que pode ser sobrescrito por subclasses 
+        # para implementar comportamentos específicos de input
         if events is None:
             events = pygame.event.get()
             
@@ -59,6 +64,8 @@ class Character(pygame.sprite.Sprite):
 
 
     def update(self):
+        # POLIMORFISMO: Método que pode ser sobrescrito por subclasses 
+        # para implementar comportamentos específicos de atualização
         if self.invincibility == False:
             #  Se houver chamas/explosões, execute uma verificação de colisão
             if len(self.GAME.groups["explosions"]) > 0 and self.flame_pass == False:
@@ -81,6 +88,8 @@ class Character(pygame.sprite.Sprite):
 
 
     def draw(self, window, offset):
+        # POLIMORFISMO: Método que pode ser sobrescrito por subclasses 
+        # para implementar comportamentos específicos de renderização
         if self.death_sound_play == False and self.delay == False:
             window.blit(self.image, (self.rect.x - offset, self.rect.y))
         #pygame.draw.rect(window, gs.RED, (self.rect.x - offset, self.rect.y, 64, 64), 1)
@@ -88,6 +97,8 @@ class Character(pygame.sprite.Sprite):
 
     def animate(self, action):
         """Alterna entre imagens para animar o movimento"""
+        # POLIMORFISMO: Método que pode ser sobrescrito por subclasses 
+        # para implementar animações específicas
         if self.delay == True:
             if pygame.time.get_ticks() - self.delay_timer >= 400 and \
                 self.death_sound_play == False:
@@ -121,6 +132,8 @@ class Character(pygame.sprite.Sprite):
 
     def move(self, action):
         """Lida com o movimento e as animações do personagem"""
+        # POLIMORFISMO: Método que pode ser sobrescrito por subclasses 
+        # para implementar movimentos específicos
         #  se o jogador não estiver vivo, não se mova
         if not self._alive:
             return

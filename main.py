@@ -9,6 +9,8 @@ class BomberMan:
         pygame.init()
         pygame.mixer.init()
         self._initialize_window()
+        # ENCAPSULAMENTO: Atributos privados (_assets, _game, _FPS, _run) 
+        # protegem o estado interno da classe
         self._assets = Assets()
         self._game = Game(self, self._assets)
         self._FPS = pygame.time.Clock()
@@ -16,6 +18,8 @@ class BomberMan:
 
     def _initialize_window(self):
         """Configura a janela do jogo"""
+        # ENCAPSULAMENTO: Método privado (_initialize_window) encapsula 
+        # a lógica de inicialização da janela
         self._screen = pygame.display.set_mode((gs.SCREENWIDTH, gs.SCREENHEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("BomberMan")
         self._center_window()
@@ -23,6 +27,8 @@ class BomberMan:
 
     def _center_window(self):
         """Centraliza a janela na tela"""
+        # ENCAPSULAMENTO: Método privado encapsula a lógica específica 
+        # de centralização da janela
         try:
             import ctypes
             hwnd = pygame.display.get_wm_info()["window"]
@@ -36,6 +42,8 @@ class BomberMan:
 
     def _set_window_style(self):
         """Configura o estilo da janela"""
+        # ENCAPSULAMENTO: Método privado encapsula a configuração 
+        # específica do estilo da janela
         try:
             import ctypes
             hwnd = pygame.display.get_wm_info()["window"]
@@ -50,10 +58,14 @@ class BomberMan:
 
     @property
     def run(self):
+        # ENCAPSULAMENTO: Property getter permite acesso controlado 
+        # ao atributo privado _run
         return self._run
 
     @run.setter
     def run(self, value):
+        # ENCAPSULAMENTO: Property setter permite modificação controlada 
+        # do atributo privado _run
         self._run = value
 
     def input(self):

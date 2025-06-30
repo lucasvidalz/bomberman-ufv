@@ -9,6 +9,8 @@ import core.gamesettings as gs
 class GameState:
     """Classe para gerenciar o estado do jogo"""
     def __init__(self):
+        # ENCAPSULAMENTO: Atributos privados (_game_on, _transition, etc.) 
+        # protegem o estado interno do jogo
         self._game_on = False
         self._transition = False
         self._music_playing = False
@@ -17,47 +19,58 @@ class GameState:
 
     @property
     def game_on(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao estado do jogo
         return self._game_on
 
     @game_on.setter
     def game_on(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada do estado
         self._game_on = value
 
     @property
     def transition(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à transição
         return self._transition
 
     @transition.setter
     def transition(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da transição
         self._transition = value
 
     @property
     def music_playing(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao estado da música
         return self._music_playing
 
     @music_playing.setter
     def music_playing(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da música
         self._music_playing = value
 
     @property
     def level(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao nível
         return self._level
 
     @level.setter
     def level(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada do nível
         self._level = value
 
     @property
     def top_score(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à pontuação máxima
         return self._top_score
 
     @top_score.setter
     def top_score(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da pontuação
         self._top_score = value
 
 class Game:
     """Classe principal do jogo"""
     def __init__(self, main, assets):
+        # ENCAPSULAMENTO: Atributos privados protegem o estado interno da classe Game
         self._main = main
         self._assets = assets
         self._camera_x_offset = 0
@@ -76,6 +89,7 @@ class Game:
 
     def _initialize_groups(self):
         """Inicializa todos os grupos de sprites"""
+        # ENCAPSULAMENTO: Método privado encapsula a inicialização dos grupos
         self._groups = {
             "hard_block": pygame.sprite.Group(),
             "soft_block": pygame.sprite.Group(),
@@ -89,6 +103,7 @@ class Game:
 
     def _initialize_music(self):
         """Inicializa a música e efeitos sonoros"""
+        # ENCAPSULAMENTO: Método privado encapsula a inicialização do sistema de áudio
         self._start_screen_music = self._assets.sounds["BM - 01 Title Screen.mp3"]
         self._bg_music = self._assets.sounds["BM - 03 Main BGM.mp3"]
         self._bg_music_special = self._assets.sounds["BM - 04 Power-Up Get.mp3"]
@@ -100,6 +115,7 @@ class Game:
 
     def _initialize_menu(self):
         """Inicializa as configurações do menu"""
+        # ENCAPSULAMENTO: Método privado encapsula a inicialização do menu
         self._point_position = [(384, 530), (384, 580)]
         self._point_pos = 0
         self._pointer_pos = self._point_position[self._point_pos]
@@ -107,6 +123,7 @@ class Game:
 
     def _set_volumes(self):
         """Configura os volumes de música e efeitos sonoros"""
+        # ENCAPSULAMENTO: Método privado encapsula a configuração de volumes
         self._start_screen_music.set_volume(self._music_volume)
         self._bg_music.set_volume(self._music_volume)
         self._bg_music_special.set_volume(self._music_volume)
@@ -117,74 +134,92 @@ class Game:
 
     @property
     def main(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao objeto principal
         return self._main
 
     @property
     def assets(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado aos assets
         return self._assets
 
     @property
     def groups(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado aos grupos
         return self._groups
 
     @property
     def player(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao jogador
         return self._player
 
     @property
     def level_matrix(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à matriz do nível
         return self._level_matrix
 
     @level_matrix.setter
     def level_matrix(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da matriz
         self._level_matrix = value
 
     @property
     def game_on(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao estado do jogo
         return self._state.game_on
 
     @game_on.setter
     def game_on(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada do estado
         self._state.game_on = value
 
     @property
     def music_playing(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao estado da música
         return self._state.music_playing
 
     @music_playing.setter
     def music_playing(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da música
         self._state.music_playing = value
 
     @property
     def transition(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à transição
         return self._state.transition
 
     @transition.setter
     def transition(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada da transição
         self._state.transition = value
 
     @property
     def level(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao nível
         return self._state.level
 
     @level.setter
     def level(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada do nível
         self._state.level = value
 
     @property
     def start_screen_music(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à música inicial
         return self._start_screen_music
 
     @property
     def bg_music(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à música de fundo
         return self._bg_music
 
     @property
     def bg_music_special(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à música especial
         return self._bg_music_special
 
     @property
     def stage_ending_music(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado à música de fim de estágio
         return self._stage_ending_music
 
     def input(self, events):

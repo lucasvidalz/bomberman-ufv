@@ -9,6 +9,7 @@ class AssetLoader(ABC):
         pass
 
 class SpriteSheetLoader(AssetLoader):
+    """Loader específico para sprite sheets"""
     def __init__(self, path, filename, width, height):
         self.path = path
         self.filename = filename
@@ -25,6 +26,7 @@ class SpriteSheetLoader(AssetLoader):
             return pygame.Surface((self.width, self.height))
 
 class SoundLoader(AssetLoader):
+    """Loader específico para arquivos de som"""
     def __init__(self, sound_files):
         self.sound_files = sound_files
     
@@ -40,6 +42,7 @@ class SoundLoader(AssetLoader):
         return sound_files
 
 class Assets:
+    """Classe principal para gerenciamento de assets do jogo"""
     def __init__(self):
         self._spritesheet = None
         self._player_char = None

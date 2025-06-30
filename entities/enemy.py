@@ -6,8 +6,12 @@ from entities.character import Character
 
 class Enemy(Character):
     """Classe base para todos os inimigos"""
+    # HERANÇA: Enemy herda de Character, obtendo todas as funcionalidades básicas 
+    # de personagem como movimento, animação, colisões, etc.
     def __init__(self, game, image_dict, group, type, row_num, col_num, size):
+        # HERANÇA: Chama o construtor da classe pai (Character)
         super().__init__(game, image_dict, group, row_num, col_num, size)
+        # ENCAPSULAMENTO: Atributos privados específicos dos inimigos
         self._type = type
         self._speed = gs.ENEMIES[self._type]["speed"]
         self._wall_hack = gs.ENEMIES[self._type]["wall_hack"]
@@ -34,25 +38,33 @@ class Enemy(Character):
 
     @property
     def destroyed(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao estado de destruição
         return self._destroyed
 
     @destroyed.setter
     def destroyed(self, value):
+        # ENCAPSULAMENTO: Property setter para modificação controlada do estado
         self._destroyed = value
 
     @property
     def type(self):
+        # ENCAPSULAMENTO: Property getter para acesso controlado ao tipo do inimigo
         return self._type
-
+    #polimorfismo - exemplo real
     def update(self):
+        # POLIMORFISMO: Sobrescreve o método update da classe pai (Character) 
+        # para implementar comportamento específico dos inimigos
         self._movement()
         self._update_line_of_sight_with_player()
         self.animate(self.action)
 
     def draw(self, window, x_offset):
+        # POLIMORFISMO: Sobrescreve o método draw da classe pai (Character) 
+        # para implementar renderização específica dos inimigos
         window.blit(self.image, (self.rect.x - x_offset, self.rect.y))
 
     def _movement(self):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de movimento dos inimigos
         if self._destroyed:
             return
 
@@ -69,6 +81,7 @@ class Enemy(Character):
         self.rect.update(self.x, self.y, self.size, self.size)
 
     def _handle_collisions(self, move_direction, directions):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de colisões
         self._new_direction(self.GAME.groups["hard_block"], move_direction, directions)
         
         if not self._wall_hack:
@@ -77,6 +90,7 @@ class Enemy(Character):
         self._new_direction(self.GAME.groups["bomb"], move_direction, directions)
 
     def _handle_chase_player(self, directions):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de perseguição do jogador
         if not self._chase_player:
             return
             
@@ -89,6 +103,7 @@ class Enemy(Character):
         self._chase_the_player()
 
     def _collision_detection_blocks(self, group, direction):
+        # ENCAPSULAMENTO: Método privado que encapsula a detecção de colisão com blocos
         for block in group:
             if not block.rect.colliderect(self.rect):
                 continue
@@ -108,6 +123,7 @@ class Enemy(Character):
         return None
 
     def _new_direction(self, group, move_direction, directions):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de mudança de direção
         dir = self._collision_detection_blocks(group, move_direction)
         if dir:
             directions.remove(dir)
@@ -116,6 +132,7 @@ class Enemy(Character):
             self._change_dir_timer = pygame.time.get_ticks()
 
     def _change_directions(self, direction_list):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de mudança automática de direção
         if (pygame.time.get_ticks() - self._change_dir_timer < self._dir_time or
             self.x % self.size != 0 or (self.y - gs.Y_OFFSET) % self.size != 0):
             return
@@ -134,6 +151,7 @@ class Enemy(Character):
         self._change_dir_timer = pygame.time.get_ticks()
 
     def _determine_if_direction_valid(self, directions, row, col):
+        # ENCAPSULAMENTO: Método privado que encapsula a validação de direções
         if self.GAME.level_matrix[row - 1][col] != "_":
             directions.remove("up")
         if self.GAME.level_matrix[row + 1][col] != "_":
@@ -147,6 +165,8 @@ class Enemy(Character):
             directions.append("left")
 
     def animate(self, action):
+        # POLIMORFISMO: Sobrescreve o método animate da classe pai (Character) 
+        # para implementar animação específica dos inimigos
         if pygame.time.get_ticks() - self._anim_timer >= self._anim_frame_time:
             self.index += 1
             if self._destroyed and self.index == len(self.image_dict[self.action]):
@@ -158,16 +178,19 @@ class Enemy(Character):
             self._anim_timer = pygame.time.get_ticks()
 
     def destroy(self):
+        # ENCAPSULAMENTO: Método público que controla a destruição do inimigo
         self._destroyed = True
         self.index = 0
         self.action = "death"
         self.image = self.image_dict[self.action][self.index]
 
     def _update_line_of_sight_with_player(self):
+        # ENCAPSULAMENTO: Método privado que encapsula a atualização da linha de visão
         self._start_pos = self.rect.center
         self._end_pos = self.GAME.player.rect.center
 
     def _chase_the_player(self):
+        # ENCAPSULAMENTO: Método privado que encapsula a lógica de perseguição
         enemy_col = self._start_pos[0] // self.size
         enemy_row = self._start_pos[1] // self.size
         player_col = self._end_pos[0] // self.size
@@ -189,11 +212,13 @@ class Enemy(Character):
         self._change_dir_timer = pygame.time.get_ticks()
 
     def _check_LoS_distance(self):
+        # ENCAPSULAMENTO: Método privado que encapsula a verificação de distância da linha de visão
         x_dist = abs(self._end_pos[0] - self._start_pos[0])
         y_dist = abs(self._end_pos[1] - self._start_pos[1])
         return x_dist > self._LoS or y_dist > self._LoS
 
     def _intersecting_items_with_LoS(self, group):
+        # ENCAPSULAMENTO: Método privado que encapsula a verificação de interseção com a linha de visão
         for item in self.GAME.groups[group]:
             if item.rect.clipline(self._start_pos, self._end_pos):
                 return True
