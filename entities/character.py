@@ -1,5 +1,5 @@
 import pygame
-import gamesettings as gs
+import core.gamesettings as gs
 
 
 class Character(pygame.sprite.Sprite):

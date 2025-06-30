@@ -1,7 +1,7 @@
 import pygame
-from assets import Assets
-from game import Game
-import gamesettings as gs
+from core.assets import Assets
+from core.game import Game
+import core.gamesettings as gs
 
 class BomberMan:
     """Classe principal que inicia e executa o jogo"""

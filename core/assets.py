@@ -1,5 +1,5 @@
 import pygame
-import gamesettings as gs
+import core.gamesettings as gs
 from abc import ABC, abstractmethod
 
 class AssetLoader(ABC):
@@ -33,7 +33,7 @@ class SoundLoader(AssetLoader):
         sound_files = {}
         for sound in self.sound_files:
             try:
-                sound_files[sound] = pygame.mixer.Sound(f"sounds/{sound}")
+                sound_files[sound] = pygame.mixer.Sound(f"assets/sounds/{sound}")
             except pygame.error as e:
                 print(f"Erro ao carregar som {sound}: {e}")
                 sound_files[sound] = None
@@ -64,7 +64,7 @@ class Assets:
         """Carrega todos os assets do jogo"""
         # SpriteSheet principal - carrega no tamanho original e depois redimensiona
         # A spritesheet original é 192x272 pixels (12 colunas x 17 linhas de sprites 16x16)
-        loader = SpriteSheetLoader("images", "spritesheet.png", 192, 272)
+        loader = SpriteSheetLoader("assets/images", "spritesheet.png", 192, 272)
         original_spritesheet = loader.load()
         
         # Redimensiona para o tamanho do jogo (64x64 por sprite)
@@ -110,10 +110,10 @@ class Assets:
         self._score_images = self._load_sprite_range(gs.SCORE_IMAGES, self._spritesheet, 16, 16, 64, 64)
         
         # Telas
-        loader = SpriteSheetLoader("images", "Bomberman start screen.png", gs.SCREENWIDTH, gs.SCREENHEIGHT)
+        loader = SpriteSheetLoader("assets/images", "Bomberman start screen.png", gs.SCREENWIDTH, gs.SCREENHEIGHT)
         self._start_screen = loader.load()
         
-        loader = SpriteSheetLoader("images", "pointer.png", 32, 32)
+        loader = SpriteSheetLoader("assets/images", "pointer.png", 32, 32)
         self._start_screen_pointer = loader.load()
         
         # Palavra "STAGE" - usando coordenadas do gamesettings

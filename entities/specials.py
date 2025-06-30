@@ -1,6 +1,6 @@
 import pygame
-import gamesettings as gs
-from info_panel import Scoring
+import core.gamesettings as gs
+from ui.info_panel import Scoring
 
 class Special(pygame.sprite.Sprite):
     """Classe base para os power-ups especiais"""

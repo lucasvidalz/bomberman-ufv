@@ -1,5 +1,5 @@
 import pygame
-import gamesettings as gs
+import core.gamesettings as gs
 
 class InfoPanel:
     """Classe para o painel de informações do jogo"""

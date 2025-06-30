@@ -1,8 +1,8 @@
 import pygame
-import gamesettings as gs
-from info_panel import Scoring
+import core.gamesettings as gs
+from ui.info_panel import Scoring
 from random import choice
-from character import Character
+from entities.character import Character
 
 class Enemy(Character):
     """Classe base para todos os inimigos"""

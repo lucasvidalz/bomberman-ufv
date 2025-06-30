@@ -1,10 +1,10 @@
 import pygame
-from character import Character
-from enemy import Enemy
-from blocks import HardBlock, SoftBlock, SpecialSoftBlock
+from entities.character import Character
+from entities.enemy import Enemy
+from entities.blocks import HardBlock, SoftBlock, SpecialSoftBlock
 from random import choice, randint
-from info_panel import InfoPanel
-import gamesettings as gs
+from ui.info_panel import InfoPanel
+import core.gamesettings as gs
 
 class GameState:
     """Classe para gerenciar o estado do jogo"""

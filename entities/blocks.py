@@ -1,6 +1,6 @@
 import pygame
-from specials import Special
-import gamesettings as gs
+from entities.specials import Special
+import core.gamesettings as gs
 from abc import ABC, abstractmethod
 
 class Block(pygame.sprite.Sprite, ABC):
