@@ -160,7 +160,7 @@ class Enemy(Character):
     def destroy(self):
         self._destroyed = True
         self.index = 0
-        self.action = "dead_anim"
+        self.action = "death"
         self.image = self.image_dict[self.action][self.index]
 
     def _update_line_of_sight_with_player(self):

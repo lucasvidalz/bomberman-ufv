@@ -86,4 +86,4 @@ class Special(pygame.sprite.Sprite):
         for _ in range(10):
             enemies.append(gs.SPECIAL_CONNECTIONS[self._name])
 
-        self._game.insert_enemies_into_level(self._game.level_matrix, enemies)
+        self._game._insert_enemies_into_level(self._game.level_matrix, enemies)

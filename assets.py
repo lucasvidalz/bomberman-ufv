@@ -95,10 +95,11 @@ class Assets:
         }
         
         self._specials = self._load_sprite_range(gs.SPECIALS, self._spritesheet)
+        
         # Palavras de interface - usando coordenadas do gamesettings
-        time_coord = gs.TIME_WORD[0]
-        left_coord = gs.LEFT_WORD[0]
-        stage_coord = gs.STAGE_WORD[0]
+        time_coord = gs.TIME_WORD["time_word"][0]
+        left_coord = gs.LEFT_WORD["left_word"][0]
+        stage_coord = gs.STAGE_WORD["stage_word"][0]
         
         self._time_word = pygame.transform.scale(
             self._load_sprite(self._spritesheet, time_coord[1]*16*4, time_coord[0]*16*4, 64*4, 64), (32*4, 32))

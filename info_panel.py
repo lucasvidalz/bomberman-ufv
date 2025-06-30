@@ -38,7 +38,7 @@ class InfoPanel:
             self._time -= 1
             self._time_image = self._update_time_image()
             if self._time == 0:
-                self._game.insert_enemies_into_level(
+                self._game._insert_enemies_into_level(
                     self._game.level_matrix, ["pontan" for _ in range(10)])
 
     def draw(self, window):

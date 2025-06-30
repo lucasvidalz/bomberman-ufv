@@ -34,10 +34,10 @@ class Character(pygame.sprite.Sprite):
         for event in events:
             #  Verifique se a cruz vermelha foi clicada
             if event.type == pygame.QUIT:
-                self.GAME.MAIN.run = False
+                self.GAME.main.run = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    self.GAME.MAIN.run = False
+                    self.GAME.main.run = False
                 elif event.key == pygame.K_SPACE:
                     row, col = ((self.rect.centery - gs.Y_OFFSET)//gs.SIZE, self.rect.centerx // self.size)
                     if self.GAME.level_matrix[row][col] == "_" and self.bombs_planted < self.bomb_limit:
@@ -274,7 +274,6 @@ class Character(pygame.sprite.Sprite):
             self.GAME.check_top_score(self.score)
             self.GAME.start_screen_music.play(loops=-1)
             self.GAME.music_playing = False
-            #self.GAME.MAIN.run = False
             return
         self.GAME.save_game()
         self.GAME.regenerate_stage()
